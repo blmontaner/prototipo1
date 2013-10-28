@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>MIXIT!</title>
+    </h:head>
+    <h:body>
+        <h1>MIXIT - PROTOTIPE 1</h1>
+
+        <h:form id="form" enctype="multipart/form-data">
+            <h:inputFile id="file1" value="#{bean.file1}" />
+            <h:inputFile id="file2" value="#{bean.file2}" />
+            <h:inputFile id="file3" value="#{bean.file3}" />
+            <h:inputFile id="file4" value="#{bean.file4}" />
+            <h:inputFile id="file5" value="#{bean.file5}" />
+            <h:commandButton value="Upload"
+                             action="#{bean.upload()}">
+            </h:commandButton>
+        </h:form>
+
+    </h:body>
+</html>
+

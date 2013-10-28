@@ -1,0 +1,409 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <title>Facelet Title</title>
+
+        <style type="text/css">
+            .drag { position: relative; }
+
+            .draggable { width: 150px; height: 150px; padding: 0.5em; }
+        </style>
+
+    </h:head>
+    <h:body>
+        Hello from Facelets
+        <div class="draggable">
+            <div id="wave" style="width:450px">
+                <div id="waveform">
+
+                </div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn btn-primary" data-action="back">
+                <i class="glyphicon glyphicon-step-backward"></i>
+                Backward
+            </button>
+
+            <button class="btn btn-primary" data-action="play">
+                <i class="glyphicon glyphicon-play"></i>
+                Play
+                /
+                <i class="glyphicon glyphicon-pause"></i>
+                Pause
+            </button>
+
+            <button class="btn btn-primary" data-action="forth">
+                <i class="glyphicon glyphicon-step-forward"></i>
+                Forward
+            </button>
+
+            <button class="btn btn-primary" data-action="toggle-mute">
+                <i class="glyphicon glyphicon-volume-off"></i>
+                Toggle Mute
+            </button>
+
+        </div>
+        <div class="progress-bar" id="progress-bar">
+
+        </div>
+        <div class="drag">     
+            <div id="wave2" style="width:450px">
+                <div id="waveform2">
+
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="controls2">
+                <button class="btn btn-primary" data-action="back2">
+                    <i class="glyphicon glyphicon-step-backward"></i>
+                    Backward
+                </button>
+
+                <button class="btn btn-primary" data-action="play2">
+                    <i class="glyphicon glyphicon-play"></i>
+                    Play
+                    /
+                    <i class="glyphicon glyphicon-pause"></i>
+                    Pause
+                </button>
+
+                <button class="btn btn-primary" data-action="forth2">
+                    <i class="glyphicon glyphicon-step-forward"></i>
+                    Forward
+                </button>
+
+                <button class="btn btn-primary" data-action="toggle-mute2">
+                    <i class="glyphicon glyphicon-volume-off"></i>
+                    Toggle Mute
+                </button>
+            </div>
+            <div class="progress-bar2" id="progress-bar2">
+
+            </div>
+
+
+
+
+
+        </div>
+        <div>
+            <button onclick=" wavesurfer.playPause(); wavesurfer2.playPause();" > Play </button>
+            <!--<script src="resources/soundmanager2.js" type="text/javascript" />-->
+
+
+            <script src="resources/wavesurfer.js" type="text/javascript" />
+            <script src="resources/webaudio.js" type="text/javascript" />
+            <script src="resources/drawer.js" type="text/javascript" />
+            <script src="resources/drawer.canvas.js" type="text/javascript" />
+
+            <script src="resources/drawer.svg.js" type="text/javascript" />
+
+
+            <script type="text/javascript">
+                /* <![CDATA[ */
+
+
+
+                // Create an instance
+                var wavesurfer = Object.create(WaveSurfer);
+
+                // Init n load mp3
+                document.addEventListener('DOMContentLoaded', function() {
+                    var options = {
+                        container: document.querySelector('#waveform'),
+                        waveColor: 'blue',
+                        progressColor: 'yellow',
+                        loaderColor: 'purple',
+                        cursorColor: 'navy',
+                        markerWidth: 2
+                    };
+
+                    if (location.search.match('scroll')) {
+                        options.minPxPerSec = 100;
+                        options.scrollParent = true;
+                    }
+
+                    if (location.search.match('normalize')) {
+                        options.normalize = true;
+                    }
+
+                    if (location.search.match('svg')) {
+                        options.renderer = 'SVG';
+                    }
+
+                    /* Progress bar */
+                    var progressDiv = document.querySelector('#progress-bar');
+                    var progressBar = progressDiv.querySelector('.progress-bar');
+                    wavesurfer.on('loading', function(percent, xhr) {
+                        progressDiv.style.display = 'block';
+                        progressBar.style.width = percent + '%';
+                    });
+                    wavesurfer.on('ready', function() {
+                        progressDiv.style.display = 'none';
+                    });
+
+                    // Init
+                    wavesurfer.init(options);
+                    // Load audio from URL
+                    wavesurfer.load('resources/song.mp3');
+
+                    // Start listening to drag'n'drop on document
+                    wavesurfer.bindDragNDrop('#drop');
+                });
+
+                // Play at once when ready
+                // Won't work on iOS until you touch the page
+                wavesurfer.on('ready', function() {
+                    //wavesurfer.play();
+                });
+
+                // Bind buttons and keypresses
+                (function() {
+                    var eventHandlers = {
+                        'play': function() {
+                            wavesurfer.playPause();
+                        },
+                        'green-mark': function() {
+                            wavesurfer.mark({
+                                id: 'up',
+                                color: 'rgba(0, 255, 0, 0.5)'
+                            });
+                        },
+                        'red-mark': function() {
+                            wavesurfer.mark({
+                                id: 'down',
+                                color: 'rgba(255, 0, 0, 0.5)'
+                            });
+                        },
+                        'back': function() {
+                            wavesurfer.skipBackward();
+                        },
+                        'forth': function() {
+                            wavesurfer.skipForward();
+                        },
+                        'toggle-mute': function() {
+                            wavesurfer.toggleMute();
+                        }
+                    };
+
+                    document.addEventListener('keydown', function(e) {
+                        var map = {
+                            32: 'play', // space
+                            38: 'green-mark', // up
+                            40: 'red-mark', // down
+                            37: 'back', // left
+                            39: 'forth'       // right
+                        };
+                        if (e.keyCode in map) {
+                            var handler = eventHandlers[map[e.keyCode]];
+                            e.preventDefault();
+                            handler && handler(e);
+                        }
+                    });
+
+                    document.addEventListener('click', function(e) {
+                        var action = e.target.dataset && e.target.dataset.action;
+                        if (action && action in eventHandlers) {
+                            eventHandlers[action](e);
+                        }
+                    });
+                }());
+
+                // Flash mark when it's played over
+                wavesurfer.on('mark', function(marker) {
+                    if (marker.timer) {
+                        return;
+                    }
+
+                    marker.timer = setTimeout(function() {
+                        var origColor = marker.color;
+                        marker.update({color: 'yellow'});
+
+                        setTimeout(function() {
+                            marker.update({color: origColor});
+                            delete marker.timer;
+                        }, 100);
+                    }, 100);
+                });
+
+                wavesurfer.on('error', function(err) {
+                    console.error(err);
+                });
+
+
+                var wavesurfer2 = Object.create(WaveSurfer);
+
+                // Init n load mp3
+                document.addEventListener('DOMContentLoaded', function() {
+                    var options = {
+                        container: document.querySelector('#waveform2'),
+                        waveColor: 'blue',
+                        progressColor: 'grey',
+                        loaderColor: 'purple',
+                        cursorColor: 'navy',
+                        markerWidth: 2
+                    };
+
+                    if (location.search.match('scroll')) {
+                        options.minPxPerSec = 100;
+                        options.scrollParent = true;
+                    }
+
+                    if (location.search.match('normalize')) {
+                        options.normalize = true;
+                    }
+
+                    if (location.search.match('svg')) {
+                        options.renderer = 'SVG';
+                    }
+
+                    /* Progress bar */
+                    var progressDiv = document.querySelector('#progress-bar2');
+                    var progressBar = progressDiv.querySelector('.progress-bar2');
+                    wavesurfer2.on('loading', function(percent, xhr) {
+                        progressDiv.style.display = 'block';
+                        progressBar.style.width = percent + '%';
+                    });
+                    wavesurfer2.on('ready', function() {
+                        progressDiv.style.display = 'none';
+                    });
+
+                    // Init
+                    wavesurfer2.init(options);
+                    // Load audio from URL
+                    wavesurfer2.load('resources/song.mp3');
+
+                    // Start listening to drag'n'drop on document
+                });
+
+                // Play at once when ready
+                // Won't work on iOS until you touch the page
+                wavesurfer.on('ready', function() {
+                    //wavesurfer.play();
+                });
+
+                // Bind buttons and keypresses
+                (function() {
+                    var eventHandlers = {
+                        'play2': function() {
+                            wavesurfer2.playPause();
+                        },
+                        'green-mark': function() {
+                            wavesurfer2.mark({
+                                id: 'up',
+                                color: 'rgba(0, 255, 0, 0.5)'
+                            });
+                        },
+                        'red-mark': function() {
+                            wavesurfer2.mark({
+                                id: 'down',
+                                color: 'rgba(255, 0, 0, 0.5)'
+                            });
+                        },
+                        'back2': function() {
+                            wavesurfer2.skipBackward();
+                        },
+                        'forth2': function() {
+                            wavesurfer2.skipForward();
+                        },
+                        'toggle-mute2': function() {
+                            wavesurfer2.toggleMute();
+                        }
+                    };
+
+                    document.addEventListener('keydown', function(e) {
+                        var map = {
+                            32: 'play', // space
+                            38: 'green-mark', // up
+                            40: 'red-mark', // down
+                            37: 'back', // left
+                            39: 'forth'       // right
+                        };
+                        if (e.keyCode in map) {
+                            var handler = eventHandlers[map[e.keyCode]];
+                            e.preventDefault();
+                            handler && handler(e);
+                        }
+                    });
+
+                    document.addEventListener('click', function(e) {
+                        var action = e.target.dataset && e.target.dataset.action;
+                        if (action && action in eventHandlers) {
+                            eventHandlers[action](e);
+                        }
+                    });
+                }());
+
+                // Flash mark when it's played over
+                wavesurfer.on('mark', function(marker) {
+                    if (marker.timer) {
+                        return;
+                    }
+
+                    marker.timer = setTimeout(function() {
+                        var origColor = marker.color;
+                        marker.update({color: 'yellow'});
+
+                        setTimeout(function() {
+                            marker.update({color: origColor});
+                            delete marker.timer;
+                        }, 100);
+                    }, 100);
+                });
+
+                wavesurfer.on('error', function(err) {
+                    console.error(err);
+                });
+
+
+
+                //            (function() {
+                //
+                //     soundManager.url = 'resources/swf/';
+                //     soundManager.flashVersion = 9;
+                //	 //soundManager.debugFlash = true
+                //
+                //      soundManager.onready(function() {
+                //
+                //       var i = 0;
+                //	   
+                //
+                //var song = soundManager.createSound({
+                //  id: 'song',
+                //  url: 'resources/d.mp3'
+                //});
+                //
+                //console.log(soundManager.features.waveformData); // true
+
+                //function draw() {
+                //
+                //  // emit waveform data every once in a while as to not break console
+                //  if (!(i % 200)) {
+                //    // wth these are empty
+                //    console.log(song.waveformData.left);
+                //    console.log(song.waveformData.right);
+                //  }
+                //
+                //  i++;
+                //  window.webkitRequestAnimationFrame(draw);
+                //
+                //}
+                //
+                //draw();
+                //
+                //
+                //
+                //     });
+                //
+                //   })();
+                /* ]]> */
+            </script>
+            
+        </div>
+    </h:body>
+</html>
+
