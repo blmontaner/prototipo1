@@ -4,6 +4,8 @@
  */
 package uy.com.mixit.objetos;
 
+import java.io.File;
+
 /**
  *
  * @author Bruno
@@ -16,6 +18,11 @@ public class Video {
 
     public String getPathAudio() {
         return pathAudio;
+    }
+    
+    public String getRelativePathAudio() {
+        File f = new File(pathAudio);
+        return f.getName();
     }
 
     public void setPathAudio(String pathAudio) {
