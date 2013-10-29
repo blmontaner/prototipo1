@@ -4,12 +4,12 @@
  */
 package uy.com.mixit.controllers;
 
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.servlet.http.Part;
+import uy.com.mixit.media.procesadores.FileCopier;
+import uy.com.mixit.objetos.BD;
+import uy.com.mixit.objetos.Proyecto;
 
 /**
  *
@@ -22,7 +22,6 @@ public class FileBean {
     /**
      * Creates a new instance of FileBean
      */
-    public static final String URL_FILES = "F:\\PrubeaProto\\";
     public FileBean() {
     }
     private Part file1;
@@ -80,18 +79,13 @@ public class FileBean {
         this.fileContent = fileContent;
     }
 
-    public String upload() {
-        try {
-            file1.write(file1.getSubmittedFileName());
-            file2.write(file2.getSubmittedFileName());
-            file3.write(file3.getSubmittedFileName());
-            file4.write(file4.getSubmittedFileName());
-            file5.write(file5.getSubmittedFileName());
-            
-        } catch (IOException ex) {
-            Logger.getLogger(FileBean.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return "mixPaso1.xhtml";
-    }
+    public void upload() {
+        Proyecto p = new Proyecto();
+        p.agregarNuevoVideo(FileCopier.copyFileToServer(file1));
+        p.agregarNuevoVideo(FileCopier.copyFileToServer(file2));
+        p.agregarNuevoVideo(FileCopier.copyFileToServer(file3));
+        p.agregarNuevoVideo(FileCopier.copyFileToServer(file4));
+        p.agregarNuevoVideo(FileCopier.copyFileToServer(file5));
+        BD.getInstance().getProyectos().add(p);
+     }
 }

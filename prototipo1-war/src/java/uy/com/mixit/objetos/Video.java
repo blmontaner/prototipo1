@@ -9,16 +9,17 @@ package uy.com.mixit.objetos;
  * @author Bruno
  */
 public class Video {
-    private String pathMp3;
+    private Integer id;
+    private String pathAudio;
     private String pathVideo;
     private Integer corrimiento;
 
-    public String getPathMp3() {
-        return pathMp3;
+    public String getPathAudio() {
+        return pathAudio;
     }
 
-    public void setPathMp3(String pathMp3) {
-        this.pathMp3 = pathMp3;
+    public void setPathAudio(String pathAudio) {
+        this.pathAudio = pathAudio;
     }
 
     public String getPathVideo() {
@@ -35,6 +36,14 @@ public class Video {
 
     public void setCorrimiento(Integer corrimiento) {
         this.corrimiento = corrimiento;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
     
     
