@@ -9,16 +9,15 @@
             <script src="resources/webaudio.js" type="text/javascript" />
             <script src="resources/drawer.js" type="text/javascript" />
             <script src="resources/drawer.canvas.js" type="text/javascript" />
-
             <script src="resources/drawer.svg.js" type="text/javascript" />
-            
              <script type="text/javascript">
                 /* <![CDATA[ */
-                var wavesurferMap = {};
+                var wavesurferMap;
                 function wavesurferFactoryGetOne(idVideo){
-                    var wavesurf = Object.create(WaveSurfer);
-                    wavesurferMap[idVideo] = wavesurf;
-                    return wavesurf;
+                    if(typeof wavesurferMap[idVideo] === 'undefined'){
+                        wavesurferMap[idVideo] = Object.create(WaveSurfer);
+                    }
+                    return wavesurferMap[idVideo];
                 }
                 
                 function playAll(){
@@ -28,8 +27,6 @@
                 }
                 /* ]]> */
               </script>    
-                 
-
     </h:head>
     <h:body>
         <h1>Mix Paso 1</h1>
@@ -46,7 +43,6 @@
                     <i class="glyphicon glyphicon-step-backward"></i>
                     Backward
                 </button>
-
                 <button class="btn btn-primary" data-action="play#{video.getId()}">
                     <i class="glyphicon glyphicon-play"></i>
                     Play
@@ -54,43 +50,36 @@
                     <i class="glyphicon glyphicon-pause"></i>
                     Pause
                 </button>
-
                 <button class="btn btn-primary" data-action="forth#{video.getId()}">
                     <i class="glyphicon glyphicon-step-forward"></i>
                     Forward
                 </button>
-
                 <button class="btn btn-primary" data-action="toggle-mute#{video.getId()}">
                     <i class="glyphicon glyphicon-volume-off"></i>
                     Toggle Mute
                 </button>
-
             </div>
             <div class="progress-bar#{video.getId()}" id="progress-bar#{video.getId()}">
-
+                <div class="progress-bar#{video.getId()}" ></div>
             </div>
             <script type="text/javascript">
                 /* <![CDATA[ */
-
                 // Create an instance
-                var wavesurfer = wavesurferFactoryGetOne(#{video.getId()});
-
+                wavesurferFactoryGetOne(#{video.getId()});
                 // Init n load mp3
                 document.addEventListener('DOMContentLoaded', function() {
                     var options = {
-                        container: document.querySelector('#waveform#{video.getId()}'),
+                        container: document.querySelector('#wave#{video.getId()}'),
                         waveColor: 'blue',
                         progressColor: 'grey',
                         loaderColor: 'purple',
                         cursorColor: 'navy',
                         markerWidth: 2
                     };
-
                     if (location.search.match('scroll')) {
                         options.minPxPerSec = 100;
                         options.scrollParent = true;
                     }
-
                     if (location.search.match('normalize')) {
                         options.normalize = true;
                     }
@@ -98,62 +87,39 @@
                     if (location.search.match('svg')) {
                         options.renderer = 'SVG';
                     }
-
                     /* Progress bar */
                     var progressDiv = document.querySelector('#progress-bar#{video.getId()}');
                     var progressBar = progressDiv.querySelector('.progress-bar#{video.getId()}');
-                    wavesurfer.on('loading', function(percent, xhr) {
+                    wavesurferFactoryGetOne(#{video.getId()}).on('loading', function(percent, xhr) {
                         progressDiv.style.display = 'block';
                         progressBar.style.width = percent + '%';
                     });
-                    wavesurfer.on('ready', function() {
+                    wavesurferFactoryGetOne(#{video.getId()}).on('ready', function() {
                         progressDiv.style.display = 'none';
                     });
 
                     // Init
-                    wavesurfer.init(options);
+                    wavesurferFactoryGetOne(#{video.getId()}).init(options);
                     // Load audio from URL
-                    wavesurfer.load("#{facesContext.externalContext.requestContextPath}/serverFolder/#{video.getRelativePathAudio()}");
+                    wavesurferFactoryGetOne(#{video.getId()}).load("#{facesContext.externalContext.requestContextPath}/serverFolder/#{video.getRelativePathAudio()}");
 
-                    // Start listening to drag'n'drop on document
-                    wavesurfer.bindDragNDrop('#drop');
                 });
-
-                // Play at once when ready
-                // Won't work on iOS until you touch the page
-                wavesurfer.on('ready', function() {
-                    //wavesurfer.play();
-                });
-
                 // Bind buttons and keypresses
                 (function() {
                     var eventHandlers = {
                         'play#{video.getId()}': function() {
-                            wavesurfer.playPause();
+                            wavesurferFactoryGetOne(#{video.getId()}).playPause();
                         },
                         'back#{video.getId()}': function() {
-                            wavesurfer.skipBackward();
+                            wavesurferFactoryGetOne(#{video.getId()}).skipBackward();
                         },
                         'forth#{video.getId()}': function() {
-                            wavesurfer.skipForward();
+                            wavesurferFactoryGetOne(#{video.getId()}).skipForward();
                         },
                         'toggle-mute#{video.getId()}': function() {
-                            wavesurfer.toggleMute();
+                            wavesurferFactoryGetOne(#{video.getId()}).toggleMute();
                         }
                     };
-
-                    document.addEventListener('keydown', function(e) {
-                        var map = {
-                            32: 'play#{video.getId()}', // space
-                            37: 'back#{video.getId()}', // left
-                            39: 'forth#{video.getId()}'       // right
-                        };
-                        if (e.keyCode in map) {
-                            var handler = eventHandlers[map[e.keyCode]];
-                            e.preventDefault();
-                            handler && handler(e);
-                        }
-                    });
 
                     document.addEventListener('click', function(e) {
                         var action = e.target.dataset && e.target.dataset.action;
@@ -162,38 +128,14 @@
                         }
                     });
                 }());
-
-                // Flash mark when it's played over
-                wavesurfer.on('mark#{video.getId()}', function(marker) {
-                    if (marker.timer) {
-                        return;
-                    }
-
-                    marker.timer = setTimeout(function() {
-                        var origColor = marker.color;
-                        marker.update({color: 'yellow'});
-
-                        setTimeout(function() {
-                            marker.update({color: origColor});
-                            delete marker.timer;
-                        }, 100);
-                    }, 100);
-                });
-
-                wavesurfer.on('error', function(err) {
+                wavesurferFactoryGetOne(#{video.getId()}).on('error', function(err) {
                     console.error(err);
                 });
-
-
-
-
                 /* ]]> */
             </script>
         </ui:repeat>
         <div>
-            <button onclick=" " > Play </button>
-            <!--<script src="resources/soundmanager2.js" type="text/javascript" />-->
-
+            <button onclick="playAll()" > Play </button>
         </div>
     </h:body>
 </html>

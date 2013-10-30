@@ -81,11 +81,21 @@ public class FileBean {
 
     public void upload() {
         Proyecto p = new Proyecto();
-        p.agregarNuevoVideo(FileCopier.copyFileToServer(file1));
-        p.agregarNuevoVideo(FileCopier.copyFileToServer(file2));
-        p.agregarNuevoVideo(FileCopier.copyFileToServer(file3));
-        p.agregarNuevoVideo(FileCopier.copyFileToServer(file4));
-        p.agregarNuevoVideo(FileCopier.copyFileToServer(file5));
+        if(file1!=null && !file1.getSubmittedFileName().isEmpty())
+            p.agregarNuevoVideo(FileCopier.copyFileToServer(file1));
+        
+        if(file2!=null && !file2.getSubmittedFileName().isEmpty())
+            p.agregarNuevoVideo(FileCopier.copyFileToServer(file2));
+        
+        if(file3!=null && !file3.getSubmittedFileName().isEmpty())
+            p.agregarNuevoVideo(FileCopier.copyFileToServer(file3));
+        
+        if(file4!=null && !file4.getSubmittedFileName().isEmpty())
+            p.agregarNuevoVideo(FileCopier.copyFileToServer(file4));
+        
+        if(file5!=null && !file5.getSubmittedFileName().isEmpty())
+            p.agregarNuevoVideo(FileCopier.copyFileToServer(file5));
+        
         BD.getInstance().getProyectos().add(p);
      }
 }

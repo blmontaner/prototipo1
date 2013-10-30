@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Mix Paso 1 </title>
+            <script src="resources/wavesurfer.js" type="text/javascript" />
+            <script src="resources/webaudio.js" type="text/javascript" />
+            <script src="resources/drawer.js" type="text/javascript" />
+            <script src="resources/drawer.canvas.js" type="text/javascript" />
+            <script src="resources/drawer.svg.js" type="text/javascript" />
+             <script type="text/javascript">
+                /* <![CDATA[ */
+                var wavesurferMap = {};
+                function wavesurferFactoryGetOne(idVideo){
+                    if(typeof wavesurferMap[idVideo] === 'undefined'){
+                        wavesurferMap[idVideo] = Object.create(WaveSurfer);
+                    }
+                    return wavesurferMap[idVideo];
+                }
+                
+                function playAll(){
+                    for(var i = 0; i < wavesurferMap.length; i++){
+                        wavesurferMap[i].playPause();
+                    }
+                }
+                /* ]]> */
+              </script>    
+    </h:head>
+    <h:body>
+        <h1>Mix Paso 1</h1>
+            <div >
+                <div id="wave1" style="width:450px">
+                    <div id="waveform1">
+
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" data-action="back1">
+                    <i class="glyphicon glyphicon-step-backward"></i>
+                    Backward
+                </button>
+                <button class="btn btn-primary" data-action="play1">
+                    <i class="glyphicon glyphicon-play"></i>
+                    Play
+                    /
+                    <i class="glyphicon glyphicon-pause"></i>
+                    Pause
+                </button>
+                <button class="btn btn-primary" data-action="forth1">
+                    <i class="glyphicon glyphicon-step-forward"></i>
+                    Forward
+                </button>
+                <button class="btn btn-primary" data-action="toggle-mute1">
+                    <i class="glyphicon glyphicon-volume-off"></i>
+                    Toggle Mute
+                </button>
+            </div>
+            <div class="progress-bar1" id="progress-bar1">
+                <div class="progress-bar1" ></div>
+            </div>
+            
+            <div >
+                <div id="wave2" style="width:450px">
+                    <div id="waveform2">
+
+                    </div>
+                </div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" data-action="back2">
+                    <i class="glyphicon glyphicon-step-backward"></i>
+                    Backward
+                </button>
+                <button class="btn btn-primary" data-action="play2">
+                    <i class="glyphicon glyphicon-play"></i>
+                    Play
+                    /
+                    <i class="glyphicon glyphicon-pause"></i>
+                    Pause
+                </button>
+                <button class="btn btn-primary" data-action="forth2">
+                    <i class="glyphicon glyphicon-step-forward"></i>
+                    Forward
+                </button>
+                <button class="btn btn-primary" data-action="toggle-mute2">
+                    <i class="glyphicon glyphicon-volume-off"></i>
+                    Toggle Mute
+                </button>
+            </div>
+            <div class="progress-bar2" id="progress-bar2">
+                <div class="progress-bar2" ></div>
+            </div>
+        
+            <script type="text/javascript">
+                /* <![CDATA[ */
+                // Create an instance
+                wavesurferFactoryGetOne(1);
+                // Init n load mp3
+                document.addEventListener('DOMContentLoaded', function() {
+                    var options = {
+                        container: document.querySelector('#wave1'),
+                        waveColor: 'blue',
+                        progressColor: 'grey',
+                        loaderColor: 'purple',
+                        cursorColor: 'navy',
+                        markerWidth: 2
+                    };
+                    if (location.search.match('scroll')) {
+                        options.minPxPerSec = 100;
+                        options.scrollParent = true;
+                    }
+                    if (location.search.match('normalize')) {
+                        options.normalize = true;
+                    }
+
+                    if (location.search.match('svg')) {
+                        options.renderer = 'SVG';
+                    }
+                    /* Progress bar */
+                    var progressDiv = document.querySelector('#progress-bar1');
+                    var progressBar = progressDiv.querySelector('.progress-bar1');
+                    wavesurferFactoryGetOne(1).on('loading', function(percent, xhr) {
+                        progressDiv.style.display = 'block';
+                        progressBar.style.width = percent + '%';
+                    });
+                    wavesurferFactoryGetOne(1).on('ready', function() {
+                        progressDiv.style.display = 'none';
+                    });
+
+                    // Init
+                    wavesurferFactoryGetOne(1).init(options);
+                    // Load audio from URL
+                    wavesurferFactoryGetOne(1).load("#{facesContext.externalContext.requestContextPath}/serverFolder/1.mp3");
+
+                });
+                // Bind buttons and keypresses
+                (function() {
+                    var eventHandlers = {
+                        'play1': function() {
+                            wavesurferFactoryGetOne(1).playPause();
+                        },
+                        'back1': function() {
+                            wavesurferFactoryGetOne(1).skipBackward();
+                        },
+                        'forth1': function() {
+                            wavesurferFactoryGetOne(1).skipForward();
+                        },
+                        'toggle-mute1': function() {
+                            wavesurferFactoryGetOne(1).toggleMute();
+                        }
+                    };
+
+                    document.addEventListener('click', function(e) {
+                        var action = e.target.dataset && e.target.dataset.action;
+                        if (action && action in eventHandlers) {
+                            eventHandlers[action](e);
+                        }
+                    });
+                }());
+                wavesurferFactoryGetOne(1).on('error', function(err) {
+                    console.error(err);
+                });
+               // Create an instance
+                wavesurferFactoryGetOne(2);
+                // Init n load mp3
+                document.addEventListener('DOMContentLoaded', function() {
+                    var options = {
+                        container: document.querySelector('#wave2'),
+                        waveColor: 'blue',
+                        progressColor: 'grey',
+                        loaderColor: 'purple',
+                        cursorColor: 'navy',
+                        markerWidth: 2
+                    };
+                    if (location.search.match('scroll')) {
+                        options.minPxPerSec = 100;
+                        options.scrollParent = true;
+                    }
+                    if (location.search.match('normalize')) {
+                        options.normalize = true;
+                    }
+
+                    if (location.search.match('svg')) {
+                        options.renderer = 'SVG';
+                    }
+                    /* Progress bar */
+                    var progressDiv = document.querySelector('#progress-bar2');
+                    var progressBar = progressDiv.querySelector('.progress-bar2');
+                    wavesurferFactoryGetOne(2).on('loading', function(percent, xhr) {
+                        progressDiv.style.display = 'block';
+                        progressBar.style.width = percent + '%';
+                    });
+                    wavesurferFactoryGetOne(2).on('ready', function() {
+                        progressDiv.style.display = 'none';
+                    });
+
+                    // Init
+                    wavesurferFactoryGetOne(2).init(options);
+                    // Load audio from URL
+                    wavesurferFactoryGetOne(2).load("#{facesContext.externalContext.requestContextPath}/serverFolder/2.mp3");
+
+                });
+                // Bind buttons and keypresses
+                (function() {
+                    var eventHandlers = {
+                        'play2': function() {
+                            wavesurferFactoryGetOne(2).playPause();
+                        },
+                        'back2': function() {
+                            wavesurferFactoryGetOne(2).skipBackward();
+                        },
+                        'forth2': function() {
+                            wavesurferFactoryGetOne(2).skipForward();
+                        },
+                        'toggle-mute2': function() {
+                            wavesurferFactoryGetOne(2).toggleMute();
+                        }
+                    };
+
+                    document.addEventListener('click', function(e) {
+                        var action = e.target.dataset && e.target.dataset.action;
+                        if (action && action in eventHandlers) {
+                            eventHandlers[action](e);
+                        }
+                    });
+                }());
+                wavesurferFactoryGetOne(2).on('error', function(err) {
+                    console.error(err);
+                });
+                /* ]]> */
+            </script>
+        <div>
+            <button onclick="playAll()" > Play </button>
+        </div>
+    </h:body>
+</html>
+

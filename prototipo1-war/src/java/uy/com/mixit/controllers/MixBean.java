@@ -25,6 +25,6 @@ public class MixBean {
     }
     
     public List<Video> getCurrentVideos(){
-        return BD.getInstance().getProyectos().get(0).getVideos();
+        return BD.getInstance().getProyectos().get(BD.getInstance().getProyectos().size()-1).getVideos();
     }
 }
