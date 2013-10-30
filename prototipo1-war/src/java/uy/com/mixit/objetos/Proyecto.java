@@ -33,7 +33,7 @@ public class Proyecto {
         vid.setId(BD.getNextId());
         vid.setPathVideo(videoPath);
         System.out.println(videoPath);
-        String audioPath = Util.getFileNameNoExtension(videoPath)+".wav";
+        String audioPath = Util.getFileNameNoExtension(videoPath)+".mp3";
         FFmpegProcesador.extraerAudio(videoPath,audioPath);
         System.out.println(audioPath);
         vid.setPathAudio(audioPath);

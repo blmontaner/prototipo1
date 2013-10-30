@@ -10,7 +10,7 @@ package uy.com.mixit.utils;
  */
 public class Util {
     
-    public static final String URL_FILES = "/home/bruno/serverFolder/";
+    public static final String URL_FILES = "C:/serverFolder/";
     
     public static String getFileNameNoExtension(String fileName){
         String name;

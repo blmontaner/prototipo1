@@ -22,7 +22,7 @@ public class FFmpegProcesador {
      *  -ar 44100 indicates the sampling frequency. 
      * 
      */
-    public static String EXTRACT_AUDIO = "ffmpeg -i {0} -ab 160k -ac 2 -ar 44100 -vn {1}";
+    public static String EXTRACT_AUDIO = "ffmpeg -i {0} -ab 64k -ac 2 -ar 44100 -vn {1}";
     public static String CREATE_MOZAIC = "ffmpeg -i {0} -i {1} -i {2} -i {3} -filter_complex \"nullsrc=size=640x480 [base]; [0:v] setpts=PTS-STARTPTS, scale=320x240 [upperleft]; [1:v] setpts=PTS-STARTPTS, scale=320x240 [upperright]; [2:v] setpts=PTS-STARTPTS, scale=320x240 [lowerleft]; [3:v] setpts=PTS-STARTPTS, scale=320x240 [lowerright]; [base][upperleft] overlay=shortest=1 [tmp1]; [tmp1][upperright] overlay=shortest=1:x=320 [tmp2]; [tmp2][lowerleft] overlay=shortest=1:y=240 [tmp3]; [tmp3][lowerright] overlay=shortest=1:x=320:y=240\" -c:v libx264 {4}";
     
     public static void extraerAudio(String video,String audio){
