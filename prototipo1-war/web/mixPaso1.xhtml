@@ -12,19 +12,31 @@
             <script src="resources/drawer.svg.js" type="text/javascript" />
              <script type="text/javascript">
                 /* <![CDATA[ */
-                var wavesurferMap;
+                var wavesurferMap = {};
+                var wavesurferIds = new Array();
                 function wavesurferFactoryGetOne(idVideo){
                     if(typeof wavesurferMap[idVideo] === 'undefined'){
                         wavesurferMap[idVideo] = Object.create(WaveSurfer);
+                        var id = (typeof wavesurferIds.length) === 'undefined' ? 0 : wavesurferIds.length;
+                        wavesurferIds[id]=idVideo;
                     }
                     return wavesurferMap[idVideo];
                 }
                 
                 function playAll(){
-                    for(var i = 0; i < wavesurferMap.length; i++){
-                        wavesurferMap[i].playPause();
+                    for(var i = 0; i < wavesurferIds.length; i++){
+                        wavesurferFactoryGetOne(wavesurferIds[i]).playPause();
                     }
                 }
+                
+                function playAllConCorrimient(){
+                    for(var i = 0; i < wavesurferIds.length; i++){
+                        var corrimiento = document.getElementById('corrimiento'+wavesurferIds[i]).value;
+                        var waveSurf=wavesurferFactoryGetOne(wavesurferIds[i]);
+                        setTimeout(function(){waveSurf.play();}, corrimiento*100);
+                    }
+                }
+                function deferredPlaying(waveSurf) { waveSurf.play();}
                 /* ]]> */
               </script>    
     </h:head>
@@ -61,6 +73,10 @@
             </div>
             <div class="progress-bar#{video.getId()}" id="progress-bar#{video.getId()}">
                 <div class="progress-bar#{video.getId()}" ></div>
+            </div>
+            <div >
+                <input type="checkbox" id="shouldPlay#{video.getId()}" />
+                <input type="text" id="corrimiento#{video.getId()}" value="0" placeholder="0"/>
             </div>
             <script type="text/javascript">
                 /* <![CDATA[ */
@@ -136,6 +152,7 @@
         </ui:repeat>
         <div>
             <button onclick="playAll()" > Play </button>
+            <button onclick="playAllConCorrimient()" > Play </button>
         </div>
     </h:body>
 </html>
