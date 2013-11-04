@@ -52,10 +52,12 @@
             var corrimientosJSON = [];
             function loadJSONCorrimientos() {
                 for (var i = 0; i < wavesurferIds.length; i++) {
-                    corrimientosJSON.push({
-                        "id": wavesurferIds[i],
-                        "corrimiento": corrimientos[wavesurferIds[i]] * 100,
-                    });
+                    if(typeof corrimientos[wavesurferIds[i]] !== 'undefined'){
+                        corrimientosJSON.push({
+                            "id": wavesurferIds[i],
+                            "corrimiento": corrimientos[wavesurferIds[i]] * 100,
+                        });
+                    }
                 }
                 console.log(JSON.stringify(corrimientosJSON));
                 document.getElementById('corrimientoHiddenContainer').value = JSON.stringify(corrimientosJSON);
@@ -113,6 +115,7 @@
                     progressColor: 'grey',
                     loaderColor: 'purple',
                     cursorColor: 'navy',
+                    fillParent : false,
                     markerWidth: 2
                 };
                 if (location.search.match('scroll')) {

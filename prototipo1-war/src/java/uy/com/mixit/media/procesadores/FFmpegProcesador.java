@@ -25,7 +25,8 @@ public class FFmpegProcesador {
      */
     public static String EXTRACT_AUDIO = "ffmpeg -i {0} -ab 64k -ac 2 -ar 44100 -vn {1}";
     public static String CREATE_MOZAIC = "ffmpeg -i {0} -i {1} -i {2} -i {3} -filter_complex \"nullsrc=size=640x480 [base]; [0:v] setpts=PTS-STARTPTS, scale=320x240 [upperleft]; [1:v] setpts=PTS-STARTPTS, scale=320x240 [upperright]; [2:v] setpts=PTS-STARTPTS, scale=320x240 [lowerleft]; [3:v] setpts=PTS-STARTPTS, scale=320x240 [lowerright]; [base][upperleft] overlay=shortest=1 [tmp1]; [tmp1][upperright] overlay=shortest=1:x=320 [tmp2]; [tmp2][lowerleft] overlay=shortest=1:y=240 [tmp3]; [tmp3][lowerright] overlay=shortest=1:x=320:y=240\" -c:v libx264 {4}";
-    //ffmpeg -itsoffset 00:00:05 -i 2.avi -i 5.avi -i 3.avi -i 4.avi -filter_complex amix=inputs=4:duration=longest "nullsrc=size=640x480 [base]; [0:v] setpts=PTS-1, scale=320x240 [upperleft]; [1:v] setpts=PTS-STARTPTS, scale=320x240 [upperright]; [2:v] setpts=PTS-STARTPTS, scale=320x240 [lowerleft]; [3:v] setpts=PTS-STARTPTS, scale=320x240 [lowerright]; [base][upperleft] overlay=shortest=1 [tmp1]; [tmp1][upperright] overlay=shortest=1:x=320 [tmp2]; [tmp2][lowerleft] overlay=shortest=1:y=240 [tmp3]; [tmp3][lowerright] overlay=shortest=1:x=320:y=240" -c:v libx264 output.mkv
+    public static String CREATE_MOZAIC_4_ITEMS = "ffmpeg {0} -filter_complex \"nullsrc=size=640x480 [base]; [0:v] setpts=PTS-1, scale=320x240 [upperleft]; [1:v] setpts=PTS-STARTPTS, scale=320x240 [upperright]; [2:v] setpts=PTS-STARTPTS, scale=320x240 [lowerleft]; [3:v] setpts=PTS-STARTPTS, scale=320x240 [lowerright]; [base][upperleft] overlay=shortest=1 [tmp1]; [tmp1][upperright] overlay=shortest=1:x=320 [tmp2]; [tmp2][lowerleft] overlay=shortest=1:y=240 [tmp3]; [tmp3][lowerright] overlay=shortest=1:x=320:y=240\" -c:v libx264 {1}";
+    //amix=inputs=4:duration=longest
     public static void extraerAudio(String video,String audio){
         Runtime rt = Runtime.getRuntime();
         try {
@@ -36,6 +37,17 @@ public class FFmpegProcesador {
     }
     
     public static void crearMosaico(List<Video> videos,String videoOut){
+        String videosParams = "";
+        for(Video v : videos){
+            videosParams += v.getCorrimiento() != null && v.getCorrimiento() > 0 ? " -itsoffset "+v.getCorrimiento(): "";
+            videosParams += " -i "+v.getPathVideo()+" ";
+        }
+        Runtime rt = Runtime.getRuntime();
+        try {
+            Process pr = rt.exec(CREATE_MOZAIC_4_ITEMS.replace("{0}",videosParams).replace("{1}",videoOut));
+        } catch (IOException ex) {
+            Logger.getLogger(FFmpegProcesador.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
     

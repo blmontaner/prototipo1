@@ -15,11 +15,22 @@ import uy.com.mixit.utils.Util;
  */
 public class Proyecto {
     private List<Video> videos;
+    private Video videoPublicado;
     
     public Proyecto(){
         videos = new ArrayList<>();
+        videoPublicado = new Video();
+        videoPublicado.setPathVideo(Util.URL_FILES+"outputPrubea.flv");
     }
 
+    public Video getVideoPublicado() {
+        return videoPublicado;
+    }
+
+    public void setVideoPublicado(Video videoPublicado) {
+        this.videoPublicado = videoPublicado;
+    }
+    
     public List<Video> getVideos() {
         return videos;
     }
@@ -41,7 +52,8 @@ public class Proyecto {
     }
     
     public void crearVideo(){
-        FFmpegProcesador.crearMosaico(getVideos().get(0).getPathVideo(), getVideos().get(1).getPathVideo(), getVideos().get(2).getPathVideo(), getVideos().get(3).getPathVideo(), "outPutMixeo.flv");
+        //FFmpegProcesador.crearMosaico(getVideos().get(0).getPathVideo(), getVideos().get(1).getPathVideo(), getVideos().get(2).getPathVideo(), getVideos().get(3).getPathVideo(), "outPutMixeo.flv");
+        FFmpegProcesador.crearMosaico(this.getVideos(),videoPublicado.getPathVideo());
     }
     
 }

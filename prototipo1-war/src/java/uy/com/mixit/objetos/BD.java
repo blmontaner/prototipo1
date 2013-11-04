@@ -39,4 +39,9 @@ public class BD {
     public static Integer getNextId(){
         return generalId++;
     }
+    
+    public static Proyecto getLastProyecto(){
+        return BD.getInstance().getProyectos().get(BD.getInstance().getProyectos().size() - 1);
+    }
 }
+

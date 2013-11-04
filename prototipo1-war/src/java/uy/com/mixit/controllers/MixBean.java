@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
+import uy.com.mixit.media.procesadores.FFmpegProcesador;
 import uy.com.mixit.objetos.BD;
 import uy.com.mixit.objetos.Video;
 
@@ -30,11 +31,11 @@ public class MixBean {
     }
 
     public List<Video> getCurrentVideos() {
-        return BD.getInstance().getProyectos().get(BD.getInstance().getProyectos().size() - 1).getVideos();
+        return BD.getLastProyecto().getVideos();
     }
 
     public void getCorrimientos() {
-        for (Video v : BD.getInstance().getProyectos().get(BD.getInstance().getProyectos().size() - 1).getVideos()) {
+        for (Video v : BD.getLastProyecto().getVideos()) {
             System.out.println(v.getId() + " c: " + v.getCorrimiento());
         }
     }
@@ -56,13 +57,12 @@ public class MixBean {
                 idCorrimiento.put(((Double)jsonMap.get("id")).intValue(),((Double)jsonMap.get("corrimiento")).intValue());
                 System.out.print(((Double)jsonMap.get("id")).intValue() + " corri= " + ((Double)jsonMap.get("corrimiento")).intValue());
             }
-            for (Video v : BD.getInstance().getProyectos().get(BD.getInstance().getProyectos().size() - 1).getVideos()) {
+            for (Video v : BD.getLastProyecto().getVideos()) {
                 if (idCorrimiento.containsKey(v.getId())) {
                     v.setCorrimiento(idCorrimiento.get(v.getId()));
                 }
             }
-            
-            
+            BD.getLastProyecto().crearVideo();
         }
     }
 }
