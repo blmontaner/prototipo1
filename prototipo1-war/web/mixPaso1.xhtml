@@ -2,43 +2,66 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
     <h:head>
         <title>Mix Paso 1 </title>
-            <script src="resources/wavesurfer.js" type="text/javascript" />
-            <script src="resources/webaudio.js" type="text/javascript" />
-            <script src="resources/drawer.js" type="text/javascript" />
-            <script src="resources/drawer.canvas.js" type="text/javascript" />
-            <script src="resources/drawer.svg.js" type="text/javascript" />
-             <script type="text/javascript">
-                /* <![CDATA[ */
-                var wavesurferMap = {};
-                var wavesurferIds = new Array();
-                function wavesurferFactoryGetOne(idVideo){
-                    if(typeof wavesurferMap[idVideo] === 'undefined'){
-                        wavesurferMap[idVideo] = Object.create(WaveSurfer);
-                        var id = (typeof wavesurferIds.length) === 'undefined' ? 0 : wavesurferIds.length;
-                        wavesurferIds[id]=idVideo;
-                    }
-                    return wavesurferMap[idVideo];
+        <script src="resources/wavesurfer.js" type="text/javascript" />
+        <script src="resources/webaudio.js" type="text/javascript" />
+        <script src="resources/drawer.js" type="text/javascript" />
+        <script src="resources/drawer.canvas.js" type="text/javascript" />
+        <script src="resources/drawer.svg.js" type="text/javascript" />
+        <script type="text/javascript">
+            /* <![CDATA[ */
+            var wavesurferMap = {};
+            var wavesurferIds = new Array();
+            var corrimientos = new Array();
+            function wavesurferFactoryGetOne(idVideo) {
+                if (typeof wavesurferMap[idVideo] === 'undefined') {
+                    wavesurferMap[idVideo] = Object.create(WaveSurfer);
+                    var id = (typeof wavesurferIds.length) === 'undefined' ? 0 : wavesurferIds.length;
+                    wavesurferIds[id] = idVideo;
                 }
-                
-                function playAll(){
-                    for(var i = 0; i < wavesurferIds.length; i++){
-                        wavesurferFactoryGetOne(wavesurferIds[i]).playPause();
-                    }
+                return wavesurferMap[idVideo];
+            }
+
+            function playAll() {
+                for (var i = 0; i < wavesurferIds.length; i++) {
+                    wavesurferFactoryGetOne(wavesurferIds[i]).playPause();
                 }
-                
-                function playAllConCorrimient(){
-                    for(var i = 0; i < wavesurferIds.length; i++){
-                        var corrimiento = document.getElementById('corrimiento'+wavesurferIds[i]).value;
-                        var waveSurf=wavesurferFactoryGetOne(wavesurferIds[i]);
-                        setTimeout(function(){waveSurf.play();}, corrimiento*100);
-                    }
+            }
+
+            function playAllConCorrimient() {
+                for (var i = 0; i < wavesurferIds.length; i++) {
+                    var corrimiento = corrimientos[wavesurferIds[i]] * 100;
+                    var waveSurf = wavesurferFactoryGetOne(wavesurferIds[i]);
+                    deferredPlaying(waveSurf, corrimiento);
                 }
-                function deferredPlaying(waveSurf) { waveSurf.play();}
-                /* ]]> */
-              </script>    
+            }
+
+            function deferredPlaying(waveSurf, corrimiento) {
+                setTimeout(function() {
+                    waveSurf.play();
+                }, corrimiento);
+            }
+
+            function setCorrimiento(idVideo) {
+                corrimientos[idVideo] = document.getElementById('corrimiento' + idVideo).value;
+            }
+
+            var corrimientosJSON = [];
+            function loadJSONCorrimientos() {
+                for (var i = 0; i < wavesurferIds.length; i++) {
+                    corrimientosJSON.push({
+                        "id": wavesurferIds[i],
+                        "corrimiento": corrimientos[wavesurferIds[i]] * 100,
+                    });
+                }
+                console.log(JSON.stringify(corrimientosJSON));
+                document.getElementById('corrimientoHiddenContainer').value = JSON.stringify(corrimientosJSON);
+            }
+            /* ]]> */
+        </script>    
     </h:head>
     <h:body>
         <h1>Mix Paso 1</h1>
@@ -76,83 +99,90 @@
             </div>
             <div >
                 <input type="checkbox" id="shouldPlay#{video.getId()}" />
-                <input type="text" id="corrimiento#{video.getId()}" value="0" placeholder="0"/>
+                <input type="text" id="corrimiento#{video.getId()}" value="0" placeholder="0" onchange="setCorrimiento(#{video.getId()})" />
             </div>
             <script type="text/javascript">
-                /* <![CDATA[ */
-                // Create an instance
-                wavesurferFactoryGetOne(#{video.getId()});
-                // Init n load mp3
-                document.addEventListener('DOMContentLoaded', function() {
-                    var options = {
-                        container: document.querySelector('#wave#{video.getId()}'),
-                        waveColor: 'blue',
-                        progressColor: 'grey',
-                        loaderColor: 'purple',
-                        cursorColor: 'navy',
-                        markerWidth: 2
-                    };
-                    if (location.search.match('scroll')) {
-                        options.minPxPerSec = 100;
-                        options.scrollParent = true;
-                    }
-                    if (location.search.match('normalize')) {
-                        options.normalize = true;
-                    }
+            /* <![CDATA[ */
+            // Create an instance
+            wavesurferFactoryGetOne(#{video.getId()});
+            // Init n load mp3
+            document.addEventListener('DOMContentLoaded', function() {
+                var options = {
+                    container: document.querySelector('#wave#{video.getId()}'),
+                    waveColor: 'blue',
+                    progressColor: 'grey',
+                    loaderColor: 'purple',
+                    cursorColor: 'navy',
+                    markerWidth: 2
+                };
+                if (location.search.match('scroll')) {
+                    options.minPxPerSec = 100;
+                    options.scrollParent = true;
+                }
+                if (location.search.match('normalize')) {
+                    options.normalize = true;
+                }
 
-                    if (location.search.match('svg')) {
-                        options.renderer = 'SVG';
-                    }
-                    /* Progress bar */
-                    var progressDiv = document.querySelector('#progress-bar#{video.getId()}');
-                    var progressBar = progressDiv.querySelector('.progress-bar#{video.getId()}');
-                    wavesurferFactoryGetOne(#{video.getId()}).on('loading', function(percent, xhr) {
-                        progressDiv.style.display = 'block';
-                        progressBar.style.width = percent + '%';
-                    });
-                    wavesurferFactoryGetOne(#{video.getId()}).on('ready', function() {
-                        progressDiv.style.display = 'none';
-                    });
-
-                    // Init
-                    wavesurferFactoryGetOne(#{video.getId()}).init(options);
-                    // Load audio from URL
-                    wavesurferFactoryGetOne(#{video.getId()}).load("#{facesContext.externalContext.requestContextPath}/serverFolder/#{video.getRelativePathAudio()}");
-
+                if (location.search.match('svg')) {
+                    options.renderer = 'SVG';
+                }
+                /* Progress bar */
+                var progressDiv = document.querySelector('#progress-bar#{video.getId()}');
+                var progressBar = progressDiv.querySelector('.progress-bar#{video.getId()}');
+                wavesurferFactoryGetOne(#{video.getId()}).on('loading', function(percent, xhr) {
+                    progressDiv.style.display = 'block';
+                    progressBar.style.width = percent + '%';
                 });
-                // Bind buttons and keypresses
-                (function() {
-                    var eventHandlers = {
-                        'play#{video.getId()}': function() {
-                            wavesurferFactoryGetOne(#{video.getId()}).playPause();
-                        },
-                        'back#{video.getId()}': function() {
-                            wavesurferFactoryGetOne(#{video.getId()}).skipBackward();
-                        },
-                        'forth#{video.getId()}': function() {
-                            wavesurferFactoryGetOne(#{video.getId()}).skipForward();
-                        },
-                        'toggle-mute#{video.getId()}': function() {
-                            wavesurferFactoryGetOne(#{video.getId()}).toggleMute();
-                        }
-                    };
-
-                    document.addEventListener('click', function(e) {
-                        var action = e.target.dataset && e.target.dataset.action;
-                        if (action && action in eventHandlers) {
-                            eventHandlers[action](e);
-                        }
-                    });
-                }());
-                wavesurferFactoryGetOne(#{video.getId()}).on('error', function(err) {
-                    console.error(err);
+                wavesurferFactoryGetOne(#{video.getId()}).on('ready', function() {
+                    progressDiv.style.display = 'none';
                 });
-                /* ]]> */
+
+                // Init
+                wavesurferFactoryGetOne(#{video.getId()}).init(options);
+                // Load audio from URL
+                wavesurferFactoryGetOne(#{video.getId()}).load("#{facesContext.externalContext.requestContextPath}/serverFolder/#{video.getRelativePathAudio()}");
+
+            });
+            // Bind buttons and keypresses
+            (function() {
+                var eventHandlers = {
+                    'play#{video.getId()}': function() {
+                        wavesurferFactoryGetOne(#{video.getId()}).playPause();
+                    },
+                    'back#{video.getId()}': function() {
+                        wavesurferFactoryGetOne(#{video.getId()}).skipBackward();
+                    },
+                    'forth#{video.getId()}': function() {
+                        wavesurferFactoryGetOne(#{video.getId()}).skipForward();
+                    },
+                    'toggle-mute#{video.getId()}': function() {
+                        wavesurferFactoryGetOne(#{video.getId()}).toggleMute();
+                    }
+                };
+
+                document.addEventListener('click', function(e) {
+                    var action = e.target.dataset && e.target.dataset.action;
+                    if (action && action in eventHandlers) {
+                        eventHandlers[action](e);
+                    }
+                });
+            }());
+            wavesurferFactoryGetOne(#{video.getId()}).on('error', function(err) {
+                console.error(err);
+            });
+            /* ]]> */
             </script>
         </ui:repeat>
         <div>
             <button onclick="playAll()" > Play </button>
-            <button onclick="playAllConCorrimient()" > Play </button>
+            <button onclick="playAllConCorrimient()" > Play Sincronizado </button>
+            <h:form prependId="false">
+                <h:commandLink value="Mixear" action="#{mix.crearVideo()}" onclick="loadJSONCorrimientos()">
+                    <f:ajax execute="corrimientoHiddenContainer" />
+                </h:commandLink>
+
+                <h:inputHidden id="corrimientoHiddenContainer" value="#{mix.JSONCorrimientos}" />
+            </h:form>
         </div>
     </h:body>
 </html>

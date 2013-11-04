@@ -40,4 +40,8 @@ public class Proyecto {
         videos.add(vid);
     }
     
+    public void crearVideo(){
+        FFmpegProcesador.crearMosaico(getVideos().get(0).getPathVideo(), getVideos().get(1).getPathVideo(), getVideos().get(2).getPathVideo(), getVideos().get(3).getPathVideo(), "outPutMixeo.flv");
+    }
+    
 }
