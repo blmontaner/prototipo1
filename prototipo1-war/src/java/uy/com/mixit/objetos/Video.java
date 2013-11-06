@@ -5,6 +5,7 @@
 package uy.com.mixit.objetos;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -39,6 +40,15 @@ public class Video {
 
     public Integer getCorrimiento() {
         return corrimiento;
+    }
+    
+    public String getCorrimientoEnHHMMSS(){
+       return String.format("%02d:%02d:%02d", 
+        TimeUnit.MILLISECONDS.toHours(corrimiento),
+        TimeUnit.MILLISECONDS.toMinutes(corrimiento) -  
+        TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(corrimiento)), // The change is in this line
+        TimeUnit.MILLISECONDS.toSeconds(corrimiento) - 
+        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(corrimiento)));   
     }
 
     public void setCorrimiento(Integer corrimiento) {

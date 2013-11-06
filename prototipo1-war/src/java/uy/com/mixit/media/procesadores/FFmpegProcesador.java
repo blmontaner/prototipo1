@@ -39,12 +39,14 @@ public class FFmpegProcesador {
     public static void crearMosaico(List<Video> videos,String videoOut){
         String videosParams = "";
         for(Video v : videos){
-            videosParams += v.getCorrimiento() != null && v.getCorrimiento() > 0 ? " -itsoffset "+v.getCorrimiento(): "";
+            videosParams += v.getCorrimiento() != null && v.getCorrimiento() > 0 ? " -itsoffset "+v.getCorrimientoEnHHMMSS(): "";
             videosParams += " -i "+v.getPathVideo()+" ";
         }
         Runtime rt = Runtime.getRuntime();
         try {
-            Process pr = rt.exec(CREATE_MOZAIC_4_ITEMS.replace("{0}",videosParams).replace("{1}",videoOut));
+            String s = CREATE_MOZAIC_4_ITEMS.replace("{0}",videosParams).replace("{1}",videoOut);
+            System.out.println("==>>"+s);
+            Process pr = rt.exec(s);
         } catch (IOException ex) {
             Logger.getLogger(FFmpegProcesador.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -54,7 +56,9 @@ public class FFmpegProcesador {
     public static void crearMosaico(String video1,String video2,String video3,String video4,String videoOut){
         Runtime rt = Runtime.getRuntime();
         try {
-            Process pr = rt.exec((CREATE_MOZAIC.replace("{0}",video1)).replace("{1}",video2).replace("{2}",video3).replace("{3}",video4).replace("{4}",videoOut));
+            String s = (CREATE_MOZAIC.replace("{0}",video1)).replace("{1}",video2).replace("{2}",video3).replace("{3}",video4).replace("{4}",videoOut);
+            System.out.println("==>>"+s);
+            Process pr = rt.exec(s);
         } catch (IOException ex) {
             Logger.getLogger(FFmpegProcesador.class.getName()).log(Level.SEVERE, null, ex);
         }
